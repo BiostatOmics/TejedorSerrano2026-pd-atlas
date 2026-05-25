@@ -35,11 +35,11 @@ MSIG_METADATA <- MSIG_OF_INTEREST %>%
 
 # %% Load pre-computed GSEA results
 gsea_pd_effect_oligo2_in_gpi <- read_rds(
-  "04-analysis/public/04-gseas-of-interest/gsea-pd-effect-oligo2-in-gpi.rds"
+  "04-analysis/04-gseas-of-interest/gsea-pd-effect-oligo2-in-gpi.rds"
 )
 
 gsea_pd_effect_oligo1_in_gpi <- read_rds(
-  "04-analysis/public/04-gseas-of-interest/gsea-pd-effect-oligo1-in-gpi.rds"
+  "04-analysis/04-gseas-of-interest/gsea-pd-effect-oligo1-in-gpi.rds"
 )
 
 

@@ -215,9 +215,9 @@ ggsave_pdf_svg(
 # Panels b-e: Cohort description
 
 # %% Load data
-amp_metadata <- read_csv("03-data/private/00-AMP_V1_metadata.csv")
+amp_metadata <- read_csv("03-data/00-AMP_V1_metadata.csv")
 clinical_metadata <- read_csv(
-  "03-data/private/00-AMP_V1_clinical_metadata.csv"
+  "03-data/00-AMP_V1_clinical_metadata.csv"
 )
 
 sample_metadata <- amp_metadata %>%
@@ -446,10 +446,10 @@ participant_metadata %>%
 # Panel f: Cell subtype UMAP
 
 # %% Load data
-amp_metadata <- read_csv("03-data/private/00-AMP_V1_metadata.csv")
-cell_annotations <- read_tsv("03-data/public/annotations_7_11_agg.txt")
+amp_metadata <- read_csv("03-data/00-AMP_V1_metadata.csv")
+cell_annotations <- read_tsv("03-data/annotations_7_11_agg.txt")
 clinical_metadata <- read_csv(
-  "03-data/private/00-AMP_V1_clinical_metadata.csv"
+  "03-data/00-AMP_V1_clinical_metadata.csv"
 )
 
 amp_metadata <- amp_metadata %>%
@@ -517,7 +517,7 @@ ggsave_pdf_svg(
 # Panels g-h: Marker gene dotplots
 
 # %% Load data
-dge <- read_rds("04-analysis/private/pseudobulk-dge-cell-types.rds")
+dge <- read_rds("04-analysis/pseudobulk-dge-cell-types.rds")
 
 # Arrange samples by cell type for consistent ordering
 metadata <- as_tibble(dge$samples, rownames = "sample_name") %>%
@@ -526,21 +526,21 @@ dge$counts <- dge$counts[, metadata$sample_name]
 dge$samples <- dge$samples[metadata$sample_name, ]
 lcpm <- cpm(dge, log = TRUE, prior.count = 0.25)
 
-qlf <- read_rds("04-analysis/private/pseudobulk-dea-cell-types.rds")
+qlf <- read_rds("04-analysis/pseudobulk-dea-cell-types.rds")
 qlf_neurons_vs_other_neurons <- read_rds(
-  "04-analysis/private/pseudobulk-dea-neurons-vs-other-neurons.rds"
+  "04-analysis/pseudobulk-dea-neurons-vs-other-neurons.rds"
 )
 qlf_neurons_vs_other <- read_rds(
-  "04-analysis/private/pseudobulk-dea-cell-supertypes.rds"
+  "04-analysis/pseudobulk-dea-cell-supertypes.rds"
 )
 
-cell_annotations <- read_tsv("03-data/public/annotations_7_11_agg.txt")
-gene_annotations <- read_csv("03-data/public/gene-metadata.csv") %>%
+cell_annotations <- read_tsv("03-data/annotations_7_11_agg.txt")
+gene_annotations <- read_csv("03-data/gene-metadata.csv") %>%
   filter(transcript_is_canonical == 1) %>%
   distinct(ensembl_gene_id, .keep_all = TRUE)
 
 gene_pct_cells_cell_type <- read_csv(
-  "03-data/public/gene-pct-cells-expressing-cell_type_short.csv"
+  "03-data/gene-pct-cells-expressing-cell_type_short.csv"
 )
 gene_pct_long_cell_type <- gene_pct_cells_cell_type %>%
   pivot_longer(
@@ -551,7 +551,7 @@ gene_pct_long_cell_type <- gene_pct_cells_cell_type %>%
   mutate(cell_type_short = str_extract(cell_type_short, "[a-zA-Z-/]+$"))
 
 gene_pct_cells_cell_supertype <- read_csv(
-  "03-data/public/gene-pct-cells-expressing-cell-supertype-short.csv"
+  "03-data/gene-pct-cells-expressing-cell-supertype-short.csv"
 )
 gene_pct_long_cell_supertype <- gene_pct_cells_cell_supertype %>%
   pivot_longer(
@@ -914,11 +914,11 @@ ggsave_pdf_svg(
 # Panels i-j: Cell composition barplots
 
 # %% Load data
-amp_metadata <- read_csv("03-data/private/00-AMP_V1_metadata.csv")
+amp_metadata <- read_csv("03-data/00-AMP_V1_metadata.csv")
 clinical_metadata <- read_csv(
-  "03-data/private/00-AMP_V1_clinical_metadata.csv"
+  "03-data/00-AMP_V1_clinical_metadata.csv"
 )
-cell_annotations <- read_tsv("03-data/public/annotations_7_11_agg.txt")
+cell_annotations <- read_tsv("03-data/annotations_7_11_agg.txt")
 
 amp_metadata <- amp_metadata %>%
   filter(predicted_doublet == FALSE) %>%

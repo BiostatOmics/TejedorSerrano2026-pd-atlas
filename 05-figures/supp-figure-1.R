@@ -25,10 +25,10 @@ set.seed(42)
 
 
 # %% Load data
-amp_metadata <- read_csv("03-data/private/00-AMP_V1_metadata.csv")
-cell_annotations <- read_tsv("03-data/public/annotations_7_11_agg.txt")
+amp_metadata <- read_csv("03-data/00-AMP_V1_metadata.csv")
+cell_annotations <- read_tsv("03-data/annotations_7_11_agg.txt")
 clinical_metadata <- read_csv(
-  "03-data/private/00-AMP_V1_clinical_metadata.csv"
+  "03-data/00-AMP_V1_clinical_metadata.csv"
 )
 
 sample_metadata <- amp_metadata %>%

@@ -94,7 +94,7 @@ colnames(design) <- str_remove_all(colnames(design), "group")
 
 # %% Load pre-computed voomLmFit model
 oligo_fit <- readRDS(
-  "04-analysis/private/pseudobulk-dea-voomLmFit-oligos.rds"
+  "04-analysis/pseudobulk-dea-voomLmFit-oligos.rds"
 )
 
 
@@ -198,11 +198,11 @@ run_gsea <- function(ranked_list) {
 
 # %% Load pre-computed GSEA results
 gsea_pd_effect_oligo2_vs_oligo1_in_gpi <- read_rds(
-  "04-analysis/public/04-gseas-of-interest/gsea-pd-effect-oligo2-vs-oligo1-in-gpi.rds"
+  "04-analysis/04-gseas-of-interest/gsea-pd-effect-oligo2-vs-oligo1-in-gpi.rds"
 )
 
 gsea_bio_oligo2_vs_oligo1_in_gpi <- read_rds(
-  "04-analysis/public/04-gseas-of-interest/gsea-bio-oligo2-vs-oligo1-in-gpi.rds"
+  "04-analysis/04-gseas-of-interest/gsea-bio-oligo2-vs-oligo1-in-gpi.rds"
 )
 
 

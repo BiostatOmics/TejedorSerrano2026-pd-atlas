@@ -18,8 +18,8 @@ source("utils/my_utils.R")
 
 
 # %% Load data
-COMBINED_DEA_RESULTS <- "04-analysis/private/pseudobulk-dea-combined-results-ebayes-fc-1_00.rds"
-ANNOTATIONS <- "03-data/public/annotations_7_11_agg.txt"
+COMBINED_DEA_RESULTS <- "04-analysis/pseudobulk-dea-combined-results-ebayes-fc-1_00.rds"
+ANNOTATIONS <- "03-data/annotations_7_11_agg.txt"
 
 dea <- readRDS(COMBINED_DEA_RESULTS)
 dea_wo_global <- dea %>%

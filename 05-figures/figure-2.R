@@ -12,12 +12,12 @@ source("utils/my_utils.R")
 
 # %% Load data
 # Path to tascCODA results directory
-coda_results_path <- "04-analysis/public/02-differential-abundance-phi5-itermore-peri-final"
+coda_results_path <- "04-analysis/02-differential-abundance-phi5-itermore-peri-final"
 
-amp_metadata <- read_csv("03-data/private/00-AMP_V1_metadata.csv")
-cell_annotations <- read_tsv("03-data/public/annotations_7_11_agg.txt")
+amp_metadata <- read_csv("03-data/00-AMP_V1_metadata.csv")
+cell_annotations <- read_tsv("03-data/annotations_7_11_agg.txt")
 clinical_metadata <- read_csv(
-  "03-data/private/00-AMP_V1_clinical_metadata.csv"
+  "03-data/00-AMP_V1_clinical_metadata.csv"
 )
 
 # %% Format metadata

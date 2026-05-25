@@ -126,7 +126,7 @@ vertical_scientific_colormap <- base_scientific_colormap +
 # %% Cell type annotations and color/order vectors
 # Loaded at source() time; scripts must be run from the project root.
 cell_annotations <- readr::read_tsv(
-  "03-data/public/annotations_7_11_agg.txt"
+  "03-data/annotations_7_11_agg.txt"
 ) %>%
   dplyr::select(!dplyr::starts_with("..."))
 
@@ -332,12 +332,12 @@ prettify_genesets_names <- function(x, width = 30, truncate = FALSE) {
 # %% Data loaders
 
 load_pseudobulk_dge <- function() {
-  readRDS("04-analysis/private/pseudobulk-dge-preprocessed.rds")
+  readRDS("04-analysis/pseudobulk-dge-preprocessed.rds")
 }
 
 load_gene_metadata <- function() {
   readr::read_csv(
-    "03-data/public/gene-metadata.csv",
+    "03-data/gene-metadata.csv",
     col_types = readr::cols(entrezgene_id = "c")
   ) %>%
     dplyr::filter(transcript_is_canonical == 1) %>%
