@@ -1,7 +1,7 @@
 # TejedorSerrano2026-pd-atlas
 
 [![Preprint](https://img.shields.io/badge/Preprint-10.21203%2Frs.3.rs--9220144%2Fv1-blue)](https://doi.org/10.21203/rs.3.rs-9220144/v1)
-[![DOI](https://zenodo.org/badge/1249247167.svg)](https://doi.org/10.5281/zenodo.20381091)
+[[![DOI](https://zenodo.org/badge/1249247167.svg)](https://doi.org/10.5281/zenodo.20381091)](https://doi.org/10.5281/zenodo.20381092)
 [![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
 
 Code and data accompanying the manuscript:
