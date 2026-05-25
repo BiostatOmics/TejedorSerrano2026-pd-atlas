@@ -1,0 +1,16 @@
+name: py-sc
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - scanpy
+  - ipykernel
+  - notebook
+  - geosketch
+  - scikit-image
+  - igraph
+  - python-igraph
+  - leidenalg
+  - decoupler-py
+prefix: /mnt/home/users/imas_0162_genyo/jmartorell/.conda/envs/py-sc

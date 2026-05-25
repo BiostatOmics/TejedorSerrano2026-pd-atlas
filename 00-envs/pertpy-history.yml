@@ -1,0 +1,11 @@
+name: pertpy
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python
+  - ipython
+  - plotnine
+  - numpy=2.2
+prefix: /mnt/home/users/imas_0162_genyo/jmartorell/.conda/envs/pertpy

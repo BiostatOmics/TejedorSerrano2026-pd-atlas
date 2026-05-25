@@ -1,0 +1,27 @@
+# Data files
+03-data/
+04-analysis/
+
+# Generated figure outputs
+05-results/
+
+# R artifacts
+.Rhistory
+.RData
+.Rproj.user/
+*.Rcheck/
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db

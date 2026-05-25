@@ -1,0 +1,32 @@
+name: r-sc
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - r-base
+  - r-tidyverse
+  - r-showtext
+  - r-ggrastr
+  - r-ggrepel
+  - r-fnn
+  - r-patchwork
+  - r-svglite
+  - r-ggalluvial
+  - bioconductor-edger
+  - r-polychrome
+  - bioconductor-zellkonverter
+  - r-argparse
+  - bioconductor-rhdf5
+  - bioconductor-hdf5array
+  - bioconductor-pcatools
+  - bioconductor-complexheatmap
+  - r-magick
+  - bioconductor-biomart
+  - r-scico
+  - r-ggnewscale
+  - bioconductor-ggtree
+  - r-data.tree
+  - r-compositions
+  - r-ggtext
+prefix: /mnt/home/users/imas_0162_genyo/jmartorell/.conda/envs/r-sc
