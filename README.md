@@ -33,14 +33,6 @@ All environment files are in `00-envs/`. Recreate with `conda env create -f <fil
 
 The `-history.yml` variants list only explicitly installed packages (more readable; less strictly pinned).
 
-## Cell type annotation
-
-Cell type labels were transferred from the human brain cell atlas described in:
-
-> Siletti K, Hodge R, Mossi Albiach A, et al. **Transcriptomic diversity of cell types across the adult human brain.** *Science* 2023. https://doi.org/10.1126/science.add7046
-
-For full methodological details see the manuscript.
-
 ## Data access
 
 > For full details on data processing, analysis design, and interpretation please refer to the manuscript (preprint linked above).
