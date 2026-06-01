@@ -1,9 +1,8 @@
 # Description: Generate Supplementary Figure 3 panels:
-#   panels a-e — credibility heatmaps per brain region
+#   panels a-e — multi-covariate effect dotplot (disease status, sex, age)
 
 # %% Setup
 library(tidyverse)
-library(patchwork)
 library(glue)
 source("utils/my_utils.R")
 
@@ -11,14 +10,63 @@ source("utils/my_utils.R")
 # %% Load data
 coda_results_path <- "04-analysis/02-differential-abundance-phi5-itermore-peri-final"
 
+effect_files <- list.files(
+  coda_results_path,
+  pattern = ".*effects.*\\.csv$",
+  full.names = TRUE
+)
 credibility_files <- list.files(
   coda_results_path,
   pattern = ".*credibility.*\\.csv$",
   full.names = TRUE
 )
+model_files <- list.files(
+  coda_results_path,
+  pattern = ".*model.*full\\.csv$",
+  full.names = TRUE
+)
+
+model_n_by_region <- map(model_files, function(path) {
+  read_csv(path, show_col_types = FALSE) %>%
+    rename(brain_region = ...1) %>%
+    left_join(
+      tibble(
+        brain_region = names(short_to_long_brain_region),
+        brain_region_long = short_to_long_brain_region
+      ),
+      by = "brain_region"
+    ) %>%
+    mutate(
+      n_samples = as.integer(str_extract(`samples x cell types`, "\\d+")),
+      brain_region_model_n = as.character(glue(
+        "{brain_region}\n(n = {n_samples})"
+      ))
+    ) %>%
+    select(brain_region, brain_region_model_n)
+}) %>%
+  list_rbind() %>%
+  filter(brain_region != "ALL")
+
+read_and_annotate_effects <- function(file_path) {
+  file_name <- basename(file_path)
+  match <- str_match(file_name, "effects-([^-]+)-([^.]+)\\.csv")
+  brain_region <- match[2]
+  model <- match[3]
+
+  read_csv(file_path, show_col_types = FALSE) %>%
+    rename_with(~ str_to_lower(str_replace_all(.x, "\\s+", "_"))) %>%
+    mutate(
+      brain_region = brain_region,
+      model = model,
+      is_father_or_children_credible = effect != 0
+    )
+}
+
+all_coda_effects <- map_dfr(effect_files, read_and_annotate_effects) %>%
+  rename(cell_subtype_short = cell_type, logFC = `log2-fold_change`)
 
 
-# %% Helper functions
+# %% Helper functions for credibility consistency
 clean_credibility_file <- function(path) {
   read_csv(path, show_col_types = FALSE) %>%
     mutate(
@@ -54,50 +102,6 @@ clean_credibility_file <- function(path) {
     )
 }
 
-get_heatmap_plot <- function(heatmap_df) {
-  diag_tiles <- heatmap_df %>%
-    filter(as.character(Node) == as.character(reference_cell_type))
-
-  reference_parents <- cell_annotations %>%
-    transmute(
-      reference_cell_type = cell_subtype_short,
-      parent_1 = cell_type_short,
-      parent_2 = cell_supertype_short
-    ) %>%
-    pivot_longer(
-      cols = starts_with("parent"),
-      names_to = NULL,
-      values_to = "Node"
-    ) %>%
-    filter(reference_cell_type != Node)
-
-  parent_diag_tiles <- heatmap_df %>%
-    inner_join(
-      reference_parents,
-      by = c("reference_cell_type", "Node"),
-      relationship = "many-to-many"
-    )
-
-  heatmap_df %>%
-    ggplot(aes(x = reference_cell_type, y = Node, fill = final_parameter)) +
-    geom_tile(color = "gray80", linewidth = 0.01) +
-    facet_wrap(~Covariate, strip.position = "left", ncol = 1) +
-    fill_distiller_gradient(name = "Effect size") +
-    geom_tile(data = diag_tiles, fill = "black") +
-    geom_tile(data = parent_diag_tiles, fill = "black") +
-    theme_publication(4, font) +
-    horizontal_scientific_colormap +
-    theme(
-      axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5),
-      axis.title.y = element_blank(),
-      strip.background = element_blank(),
-      strip.placement = "outside",
-      strip.text = element_text(angle = 90, hjust = 0.5, face = "plain"),
-      panel.spacing = unit(0.2, "lines")
-    ) +
-    labs(x = "Reference")
-}
-
 type_subtype_map <- cell_annotations %>%
   select(parent = cell_type_short, child = cell_subtype_short)
 supertype_subtype_map <- cell_annotations %>%
@@ -123,9 +127,7 @@ get_family <- function(node, hierarchy_df) {
   while (length(stack) > 0) {
     current_node <- stack[1]
     stack <- stack[-1]
-    if (current_node %in% visited) {
-      next
-    }
+    if (current_node %in% visited) next
     visited <- c(visited, current_node)
     ancestors <- c(ancestors, current_node)
     parents <- hierarchy_df %>% filter(child == current_node) %>% pull(parent)
@@ -182,70 +184,104 @@ get_bar_df <- function(heatmap_df, hierarchy_map) {
     )
 }
 
-get_bar_plot <- function(bar_df) {
-  bar_df %>%
-    ggplot(aes(x = pct_credible, y = Node, fill = is_credible)) +
-    geom_col() +
-    facet_wrap(~Covariate, strip.position = "left", ncol = 1) +
-    scale_x_continuous(limits = c(0, 1), labels = scales::label_percent()) +
-    scale_fill_manual(values = c("FALSE" = cool_grey, "TRUE" = cool_green)) +
-    geom_vline(
-      xintercept = .5,
-      colour = "black",
-      alpha = .5,
-      linetype = "dashed",
-      linewidth = 0.2
-    ) +
-    theme_publication(4, font) +
-    xlab("Consistency") +
-    theme(
-      panel.grid.major.x = element_line(linewidth = 0.10, color = "grey85"),
-      axis.line = element_blank(),
-      axis.ticks = element_blank(),
-      axis.title.y = element_blank(),
-      axis.text.y = element_blank(),
-      axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5),
-      legend.position = "None",
-      strip.background = element_blank(),
-      strip.placement = "None",
-      strip.text = element_blank(),
-      panel.spacing = unit(0.2, "lines")
-    )
-}
-
-
-# %% Supplementary figure 3, panels a-e: credibility heatmaps per region
-for (r in credibility_files) {
-  short_region_name <- str_extract(
-    r,
-    ".*credibility-(.*)-full\\.csv$",
-    group = 1
+node_consistency <- credibility_files %>%
+  map(function(path) {
+    region_name <- str_match(path, ".*credibility-(.*)-full\\.csv$")[, 2]
+    clean_credibility_file(path) %>%
+      get_bar_df(subtype_parents) %>%
+      mutate(brain_region = region_name)
+  }) %>%
+  list_rbind() %>%
+  filter(brain_region != "ALL") %>%
+  rename(
+    covariate = Covariate,
+    cell_subtype_short = Node,
+    consistency = propagated_pct_credible
   )
-  region_name <- short_to_long_brain_region[short_region_name]
-  region_compatible <- str_replace_all(region_name, "\\s", "_")
-  region <- clean_credibility_file(r)
 
-  credibility_heatmap <- get_heatmap_plot(region) +
-    get_bar_plot(get_bar_df(region, subtype_parents)) +
-    plot_layout(widths = c(4, 1)) +
-    plot_annotation(
-      title = str_replace_all(region_name, "\n", " "),
-      theme = theme(
-        plot.title = element_text(
-          size = 5,
-          hjust = .5,
-          face = "plain",
-          margin = margin(b = 2, 0, 0, 0)
-        )
-      )
+
+# %% Supplementary figure 3, panels a-e: multi-covariate effect dotplot
+multicovariate_heatmap <- all_coda_effects %>%
+  mutate(
+    covariate = recode(
+      covariate,
+      `C(case_control, Treatment('Control'))[T.Case]` = "Disease status [PD]",
+      `sex[T.Male]` = "Sex [male]",
+      `age_at_baseline_mm_scaled` = "Age at death"
     )
-  ggsave_pdf_svg(
-    base_name = glue(
-      "05-results/02-plots/figure-2-coda-multicovariate-credibility-heatmap-{region_compatible}"
+  ) %>%
+  mutate(
+    covariate = factor(
+      covariate,
+      levels = rev(c("Disease status [PD]", "Sex [male]", "Age at death"))
     ),
-    plot = credibility_heatmap,
-    width = 60,
-    height = 120,
-    units = "mm"
+    fill_category = case_when(
+      median == 0 & sd == 0 ~ "reference",
+      effect == 0 ~ "non_credible",
+      TRUE ~ "gradient"
+    ),
+    cell_subtype_short = factor(
+      cell_subtype_short,
+      levels = correct_cell_subtype_order
+    )
+  ) %>%
+  filter(
+    model == "full",
+    brain_region != "ALL",
+    !str_detect(covariate, "cohort")
+  ) %>%
+  left_join(
+    node_consistency,
+    by = c("covariate", "cell_subtype_short", "brain_region")
   )
-}
+
+multicovariate_plot <- ggplot() +
+  facet_wrap(
+    ~ factor(
+      brain_region,
+      levels = rev(c("DMNX", "GPI", "PFC", "PMC", "PVC"))
+    ),
+    nrow = 5,
+    strip.position = "left",
+    scales = "free_x",
+    labeller = as_labeller(setNames(
+      model_n_by_region$brain_region_model_n,
+      model_n_by_region$brain_region
+    ))
+  ) +
+  geom_point(
+    data = multicovariate_heatmap,
+    aes(
+      x = cell_subtype_short,
+      y = covariate,
+      color = effect,
+      size = consistency
+    )
+  ) +
+  scale_radius(
+    name = "Consistency",
+    range = c(-.25, 2),
+    labels = scales::label_percent()
+  ) +
+  color_distiller_gradient(name = "Propagated\neffect size:") +
+  theme_publication(5, font) +
+  vertical_scientific_colormap +
+  theme(
+    strip.background = element_blank(),
+    strip.placement = "outside",
+    strip.text = element_text(angle = 90, hjust = 0.5, face = "plain"),
+    panel.spacing = unit(0, "lines"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    axis.title = element_blank(),
+    legend.position = "right",
+    legend.direction = "vertical",
+    strip.clip = "off"
+  )
+
+ggsave_pdf_svg(
+  base_name = "05-results/02-plots/figure-2-coda-multicovariate-heatmap",
+  plot = multicovariate_plot,
+  width = 80,
+  height = 80,
+  units = "mm"
+)
